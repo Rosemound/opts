@@ -8,6 +8,11 @@ func (c MoptionContainer[T]) Set(k T, v any) {
 	c[k] = v
 }
 
+func (c MoptionContainer[T]) Exist(k T) bool {
+	_, ok := c[k]
+	return ok
+}
+
 func (c MoptionContainer[T]) Get(k T) any {
 	return c[k]
 }
