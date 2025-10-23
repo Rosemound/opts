@@ -8,6 +8,11 @@ func (c OptionContainer) Set(k any, v any) {
 	c[k] = v
 }
 
+func (c OptionContainer) Exist(k any) bool {
+	_, ok := c[k]
+	return ok
+}
+
 func (c OptionContainer) Get(k any) any {
 	return c[k]
 }
