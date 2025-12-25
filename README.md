@@ -16,7 +16,7 @@ Too simple, zero-dependencies library to flexible passing of dynamic params into
 
 ### Installation
 ```bash
-go get github.com/rosemound/opts
+go get github.com/rosemound/opts/v2
 ```
 
 ### Usage mapped opts
@@ -25,17 +25,17 @@ import (
 	"context"
 	"errors"
 
-	"github.com/rosemound/opts/mopts"
+	"github.com/rosemound/opts/v2"
 )
 
 // Mapped option key type
-type MoptionKey string
+type OptionKey string
 
 // Owner key
-const OwnerKey MoptionKey = "owner"
+const OwnerKey OptionKey = "owner"
 
 // Company key (like ctx keys)
-const CompanyKey MoptionKey = "company"
+const CompanyKey OptionKey = "company"
 
 // simple service
 type service struct {
@@ -57,18 +57,17 @@ func main() {
 	// do staff
 }
 
-func NewService(ctx context.Context, opts ...mopts.Moption[MoptionKey]) (*service, error){
+func NewService(ctx context.Context, o ...opts.Option[OptionKey]) (*service, error){
 
-	// init moption container
-	conf := mopts.MoptionContainer[MoptionKey]{}
-	
-	// apply opts
-	if err := conf.ApplyA(opts); err != nil {
+	// init option container with err handling
+	c, err := opts.CreateContainerWithOptions(o)
+
+	if err != nil {
 		return nil, err
 	}
 
-	// or apply silently
-	conf.ApplySilentA(opts)
+	// or silently
+	c := opts.CreateContainerWithOptionsS(o)
 
 	// allocate your instance
 	return &service{
@@ -78,104 +77,27 @@ func NewService(ctx context.Context, opts ...mopts.Moption[MoptionKey]) (*servic
 }
 
 // With company
-func WithCompany(company any) mopts.Moption[MoptionKey] {
-	return func(o mopts.MoptionContainer[MoptionKey]) error {
+func WithCompany(company any) opts.Option[OptionKey] {
+	return func(o opts.OptionContainer[OptionKey]) error {
 		o.Set(CompanyKey, company)
 		return nil
 	}
 }
 
 // With owner & err
-func WithOwner(val string) mopts.Moption[MoptionKey] {
-	return func(o mopts.MoptionContainer[MoptionKey]) error {
-		if val == "" {
-			return errors.New("owner must be present")
+func WithOwner(val string) opts.Option[OptionKey] {
+	var err error
+
+	if val == "" {
+		err = errors.New("owner must be present")
+	}
+
+	return func(o opts.OptionContainer[OptionKey]) error {
+		if err == nil {
+			o.Set(OwnerKey, val)
 		}
 
-		o.Set(OwnerKey, val)
-		return nil
+		return err
 	}
 }
-```
-
-### Usage opts
-```go
-package main
-
-import (
-	"context"
-	"errors"
-
-	"github.com/rosemound/opts/opts"
-)
-
-// Option key type
-type OptionKey uint8
-
-// Owner key
-const OwnerKey OptionKey = 0
-
-// Company key
-const CompanyKey OptionKey = 1
-
-// simple service
-type service struct {
-	owner   string
-	company any
-}
-
-// main
-func main() {
-
-	// service instantination with dynamic params
-	s, err := NewService(context.Background(), WithCompany("test"), WithOwner("test"))
-
-	// err handling
-	if err != nil {
-		panic(err)
-	}
-
-	// do staff
-}
-
-func NewService(ctx context.Context, options ...opts.Option) (*service, error) {
-
-	// init moption container
-	conf := opts.OptionContainer{}
-
-	// apply opts
-	if err := conf.ApplyA(options); err != nil {
-		return nil, err
-	}
-
-	// or apply silently
-	conf.ApplySilentA(options)
-
-	// allocate your instance
-	return &service{
-		owner:   conf.Get(OwnerKey).(string),
-		company: conf.Get(CompanyKey),
-	}, nil
-}
-
-// With company
-func WithCompany(company any) opts.Option {
-	return func(o opts.OptionContainer) error {
-		o.Set(CompanyKey, company)
-		return nil
-	}
-}
-
-// With owner & err
-func WithOwner(val string) opts.Option {
-	return func(o opts.OptionContainer) error {
-		if val == "" {
-			return errors.New("owner must be present")
-		}
-
-		o.Set(OwnerKey, val)
-		return nil
-	}
-}
-
 ```
