@@ -6,8 +6,8 @@
 <div align="center">
 
   [![Test & Build](https://github.com/rosemound/opts/actions/workflows/build.yml/badge.svg)](https://github.com/rosemound/opts/actions/workflows/build.yml)
-  [![Go Reference](https://pkg.go.dev/badge/github.com/rosemound/opts.svg)](https://pkg.go.dev/github.com/rosemound/opts)
-  [![Go Report Card](https://goreportcard.com/badge/github.com/rosemound/opts)](https://goreportcard.com/report/github.com/rosemound/opts)
+  [![Go Reference](https://pkg.go.dev/badge/github.com/rosemound/opts/v2.svg)](https://pkg.go.dev/github.com/rosemound/opts/v2)
+  [![Go Report Card](https://goreportcard.com/badge/github.com/rosemound/opts/v2)](https://goreportcard.com/report/github.com/rosemound/opts/v2)
   
 </div>
 
