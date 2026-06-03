@@ -69,11 +69,18 @@ func NewService(ctx context.Context, o ...opts.Option[OptionKey]) (*service, err
 	// or silently
 	c := opts.CreateContainerWithOptionsS(o)
 
-	// allocate your instance
-	return &service{
-		owner: conf.Get(OwnerKey).(string),
-		company: conf.Get(CompanyKey),
-	}, nil
+	s := service{}
+
+	// extract values from container with res handling
+	if !opts.OptionValue(c, OwnerKey, &s.owner) {
+		return nil, errors.New("some err")
+	}
+
+	// or ignore 
+	_ = opts.OptionValue(c, CompanyKey, &s.company)
+
+	// ret your instance
+	return &s, nil
 }
 
 // With company

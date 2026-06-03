@@ -23,6 +23,17 @@ func CreateContainerWithOptionsS[T comparable](o []Option[T]) OptionContainer[T]
 	return c
 }
 
+func OptionValue[K comparable, V any](optc OptionContainer[K], k K, buff *V) bool {
+	if optc.Exist(k) {
+		if x, ok := optc.Get(k).(V); ok {
+			*buff = x
+			return true
+		}
+	}
+
+	return false
+}
+
 func (c OptionContainer[T]) Set(k T, v any) OptionContainer[T] {
 	c[k] = v
 	return c
